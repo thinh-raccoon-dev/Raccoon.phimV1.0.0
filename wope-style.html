@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wope — New Era of Movie Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #07071a;
+      --bg-card:     #0e0e2a;
+      --bg-raised:   #13133a;
+      --border:      rgba(120, 100, 255, 0.18);
+      --purple:      #7c5cfc;
+      --purple-dim:  #4a3a9a;
+      --purple-glow: rgba(124, 92, 252, 0.35);
+      --text:        #e8e8f4;
+      --muted:       #8888aa;
+      --white:       #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--purple-dim); border-radius: 3px; }
+
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout helpers ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .section { padding: 100px 0; }
+
+    /* ──────────────────────────────────────────
+       NAVBAR
+    ────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(7, 7, 26, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--purple); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      background: var(--purple);
+      color: var(--white);
+      border: none;
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      font-family: inherit;
+    }
+    .nav-cta:hover { background: #9272ff; transform: translateY(-1px); }
+
+    /* ──────────────────────────────────────────
+       HERO
+    ────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background glow blobs */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(ellipse at center, rgba(124, 92, 252, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124, 92, 252, 0.15);
+      border: 1px solid rgba(124, 92, 252, 0.35);
+      color: #c4b5fd;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--purple);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--purple);
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 6vw, 72px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      color: var(--white);
+      max-width: 780px;
+      margin-bottom: 20px;
+    }
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, #a78bfa, #7c5cfc, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 520px;
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 72px;
+    }
+
+    .btn-primary {
+      background: var(--purple);
+      color: var(--white);
+      border: none;
+      padding: 13px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 0 24px rgba(124, 92, 252, 0.4);
+    }
+    .btn-primary:hover { background: #9272ff; transform: translateY(-2px); box-shadow: 0 0 36px rgba(124, 92, 252, 0.6); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 13px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--purple); background: rgba(124,92,252,0.08); transform: translateY(-2px); }
+
+    /* Dashboard mockup */
+    .hero-mockup {
+      width: 100%;
+      max-width: 860px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 80px rgba(124, 92, 252, 0.2), 0 40px 80px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .mockup-bar {
+      background: var(--bg-raised);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .mockup-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+    }
+    .mockup-dot:nth-child(1) { background: #ff5f57; }
+    .mockup-dot:nth-child(2) { background: #ffbd2e; }
+    .mockup-dot:nth-child(3) { background: #28c840; }
+    .mockup-url {
+      margin-left: 12px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 4px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      flex: 1;
+      max-width: 300px;
+      text-align: center;
+    }
+
+    .mockup-body {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 20px;
+      min-height: 300px;
+    }
+
+    /* Sidebar */
+    .mockup-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mockup-nav-item {
+      padding: 8px 12px;
+      border-radius: 7px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mockup-nav-item.active {
+      background: rgba(124, 92, 252, 0.2);
+      color: #c4b5fd;
+    }
+    .mockup-nav-icon {
+      width: 14px; height: 14px;
+      background: currentColor;
+      border-radius: 3px;
+      opacity: 0.6;
+    }
+
+    /* Main content */
+    .mockup-main { display: flex; flex-direction: column; gap: 16px; }
+    .mockup-title { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+
+    .mockup-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .mockup-stat {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .mockup-stat-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+    .mockup-stat-value { font-size: 18px; font-weight: 700; color: var(--white); }
+    .mockup-stat-value.purple { color: #a78bfa; }
+    .mockup-stat-value.green { color: #4ade80; }
+
+    .mockup-table {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .mockup-table-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 8px 12px;
+      font-size: 10px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .mockup-table-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 7px 12px;
+      font-size: 11px;
+      color: var(--text);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      align-items: center;
+    }
+    .mockup-table-row:last-child { border-bottom: none; }
+    .mockup-tag {
+      display: inline-block;
+      background: rgba(124,92,252,0.2);
+      color: #c4b5fd;
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+    .mockup-bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 24px;
+    }
+    .mockup-bar-item {
+      flex: 1;
+      background: linear-gradient(to top, var(--purple), #c4b5fd);
+      border-radius: 2px 2px 0 0;
+      opacity: 0.7;
+    }
+
+    /* ──────────────────────────────────────────
+       LOGOS ROW
+    ────────────────────────────────────────── */
+    .logos-section {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .logos-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+    }
+    .logos-row {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      opacity: 0.45;
+    }
+    .logo-pill {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    /* ──────────────────────────────────────────
+       FEATURES
+    ────────────────────────────────────────── */
+    .features-header { text-align: center; margin-bottom: 64px; }
+    .section-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--purple);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--purple), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .feature-card:hover {
+      border-color: rgba(124, 92, 252, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(124, 92, 252, 0.15);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: rgba(124, 92, 252, 0.15);
+      border: 1px solid rgba(124, 92, 252, 0.3);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+    .feature-card p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .feature-card .feature-tag {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--purple);
+      cursor: pointer;
+    }
+    .feature-card .feature-tag:hover { color: #c4b5fd; }
+
+    /* ──────────────────────────────────────────
+       STATS BAND
+    ────────────────────────────────────────── */
+    .stats-band {
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(124,92,252,0.08) 0%, transparent 60%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 48px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #a78bfa, #7c5cfc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-label { font-size: 14px; color: var(--muted); }
+
+    /* ──────────────────────────────────────────
+       FAQ
+    ────────────────────────────────────────── */
+    .faq-wrap { max-width: 700px; margin: 0 auto; }
+    .faq-header { text-align: center; margin-bottom: 48px; }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: left;
+      padding: 22px 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      transition: color 0.2s;
+    }
+    .faq-question:hover { color: var(--white); }
+    .faq-arrow {
+      width: 24px; height: 24px;
+      background: rgba(124,92,252,0.15);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.3s, background 0.2s;
+      font-size: 14px;
+      color: var(--purple);
+    }
+    .faq-item.open .faq-arrow {
+      transform: rotate(45deg);
+      background: rgba(124,92,252,0.3);
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+    }
+    .faq-item.open .faq-answer { max-height: 200px; }
+    .faq-answer p {
+      padding-bottom: 22px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ──────────────────────────────────────────
+       CTA
+    ────────────────────────────────────────── */
+    .cta-section {
+      padding: 120px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(124,92,252,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(36px, 5vw, 62px);
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .cta-section h2 span {
+      background: linear-gradient(135deg, #a78bfa, #7c5cfc, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cta-section p {
+      color: var(--muted);
+      font-size: 17px;
+      margin-bottom: 40px;
+    }
+
+    .cta-form {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .cta-input {
+      flex: 1;
+      min-width: 220px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 18px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .cta-input::placeholder { color: var(--muted); }
+    .cta-input:focus { border-color: var(--purple); }
+
+    /* ──────────────────────────────────────────
+       FOOTER
+    ────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0 40px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+    .footer-brand p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 12px;
+      line-height: 1.7;
+      max-width: 240px;
+    }
+    .footer-social {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .social-btn {
+      width: 36px; height: 36px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .social-btn:hover { border-color: var(--purple); color: var(--purple); }
+
+    .footer-col h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom p { font-size: 13px; color: var(--muted); }
+
+    /* ──────────────────────────────────────────
+       RESPONSIVE
+    ────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .mockup-body { grid-template-columns: 1fr; }
+      .mockup-sidebar { display: none; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .footer-top { grid-template-columns: 1fr; }
+      .mockup-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#" class="nav-logo">w<span>o</span>pe</a>
+    <ul class="nav-links">
+      <li><a href="#">Tính năng</a></li>
+      <li><a href="#">Bảng giá</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Tài liệu</a></li>
+    </ul>
+    <button class="nav-cta">Bắt đầu miễn phí</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Kỷ nguyên mới của nghiên cứu phim</div>
+    <h1>New Era of<br /><span class="gradient-text">Movie Research</span></h1>
+    <p>Khám phá, phân tích và theo dõi xu hướng phim điện ảnh toàn cầu với công cụ nghiên cứu thế hệ mới. Dữ liệu chính xác, cập nhật theo thời gian thực.</p>
+    <div class="hero-buttons">
+      <button class="btn-primary">Khám phá ngay →</button>
+      <button class="btn-secondary">Xem demo</button>
+    </div>
+
+    <!-- Dashboard Mockup -->
+    <div class="hero-mockup">
+      <div class="mockup-bar">
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-url">app.wope.com/dashboard</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="mockup-nav-item active"><div class="mockup-nav-icon"></div> Tổng quan</div>
+          <div class="mockup-nav-item"><div class="mockup-nav-icon"></div> Phim trending</div>
+          <div class="mockup-nav-item"><div class="mockup-nav-icon"></div> Thể loại</div>
+          <div class="mockup-nav-item"><div class="mockup-nav-icon"></div> Quốc gia</div>
+          <div class="mockup-nav-item"><div class="mockup-nav-icon"></div> Diễn viên</div>
+          <div class="mockup-nav-item"><div class="mockup-nav-icon"></div> Cài đặt</div>
+        </div>
+        <div class="mockup-main">
+          <div class="mockup-title">Tổng quan hôm nay</div>
+          <div class="mockup-stats">
+            <div class="mockup-stat">
+              <div class="mockup-stat-label">Phim mới</div>
+              <div class="mockup-stat-value purple">2.4K</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="mockup-stat-label">Lượt xem</div>
+              <div class="mockup-stat-value">18M</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="mockup-stat-label">Rating TB</div>
+              <div class="mockup-stat-value green">8.7</div>
+            </div>
+          </div>
+          <div class="mockup-table">
+            <div class="mockup-table-header">
+              <span>Tên phim</span>
+              <span>Thể loại</span>
+              <span>Điểm</span>
+              <span>Xu hướng</span>
+            </div>
+            <div class="mockup-table-row">
+              <span>Oppenheimer</span>
+              <span><span class="mockup-tag">Drama</span></span>
+              <span>9.1</span>
+              <span>
+                <div class="mockup-bar-chart">
+                  <div class="mockup-bar-item" style="height:40%"></div>
+                  <div class="mockup-bar-item" style="height:60%"></div>
+                  <div class="mockup-bar-item" style="height:80%"></div>
+                  <div class="mockup-bar-item" style="height:100%"></div>
+                  <div class="mockup-bar-item" style="height:90%"></div>
+                </div>
+              </span>
+            </div>
+            <div class="mockup-table-row">
+              <span>Dune: Part Two</span>
+              <span><span class="mockup-tag">Sci-Fi</span></span>
+              <span>8.8</span>
+              <span>
+                <div class="mockup-bar-chart">
+                  <div class="mockup-bar-item" style="height:30%"></div>
+                  <div class="mockup-bar-item" style="height:70%"></div>
+                  <div class="mockup-bar-item" style="height:55%"></div>
+                  <div class="mockup-bar-item" style="height:90%"></div>
+                  <div class="mockup-bar-item" style="height:100%"></div>
+                </div>
+              </span>
+            </div>
+            <div class="mockup-table-row">
+              <span>Poor Things</span>
+              <span><span class="mockup-tag">Comedy</span></span>
+              <span>8.3</span>
+              <span>
+                <div class="mockup-bar-chart">
+                  <div class="mockup-bar-item" style="height:50%"></div>
+                  <div class="mockup-bar-item" style="height:40%"></div>
+                  <div class="mockup-bar-item" style="height:70%"></div>
+                  <div class="mockup-bar-item" style="height:60%"></div>
+                  <div class="mockup-bar-item" style="height:85%"></div>
+                </div>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGOS -->
+  <div class="logos-section">
+    <div class="container">
+      <p class="logos-label">Được tin tưởng bởi các nhà phê bình phim hàng đầu</p>
+      <div class="logos-row">
+        <span class="logo-pill">Variety</span>
+        <span class="logo-pill">IndieWire</span>
+        <span class="logo-pill">RogerEbert</span>
+        <span class="logo-pill">FilmComment</span>
+        <span class="logo-pill">Letterboxd</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="section">
+    <div class="container">
+      <div class="features-header">
+        <p class="section-eyebrow">Tính năng nổi bật</p>
+        <h2 class="section-title">Mọi thứ bạn cần<br />để nghiên cứu phim</h2>
+        <p class="section-sub">Bộ công cụ toàn diện giúp bạn khám phá, phân tích và theo dõi thế giới điện ảnh một cách chuyên sâu.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎬</div>
+          <h3>Phân tích Profile Phim</h3>
+          <p>Xem chi tiết toàn bộ thông tin về một bộ phim: diễn viên, đạo diễn, doanh thu, điểm đánh giá từ nhiều nguồn, lịch sử phát hành theo quốc gia.</p>
+          <span class="feature-tag">Khám phá tính năng →</span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Xu hướng theo Thể loại</h3>
+          <p>Theo dõi thể loại phim đang thịnh hành theo thời gian thực. Biểu đồ trực quan cho thấy sự thay đổi sở thích của khán giả toàn cầu theo tuần, tháng, năm.</p>
+          <span class="feature-tag">Xem biểu đồ →</span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Tìm kiếm Nâng cao</h3>
+          <p>Lọc phim theo nhiều tiêu chí kết hợp: năm phát hành, điểm IMDb, thể loại, quốc gia sản xuất, ngôn ngữ, giải thưởng. Kết quả chính xác trong tích tắc.</p>
+          <span class="feature-tag">Thử ngay →</span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <h3>Dữ liệu Toàn cầu</h3>
+          <p>Cơ sở dữ liệu hơn 500,000 bộ phim từ khắp nơi trên thế giới. Cập nhật liên tục từ IMDb, TMDB, Rotten Tomatoes và các nguồn uy tín khác.</p>
+          <span class="feature-tag">Xem database →</span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⭐</div>
+          <h3>So sánh Điểm Đánh giá</h3>
+          <p>So sánh điểm đánh giá từ giới phê bình và khán giả đại chúng cùng lúc. Phát hiện những bộ phim bị đánh giá thấp không đáng hoặc được khen quá mức.</p>
+          <span class="feature-tag">So sánh phim →</span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔔</div>
+          <h3>Theo dõi & Cảnh báo</h3>
+          <p>Đặt thông báo cho phim sắp phát hành, diễn viên yêu thích, hoặc khi điểm đánh giá của một bộ phim thay đổi đáng kể. Không bỏ lỡ bất kỳ điều gì.</p>
+          <span class="feature-tag">Bật thông báo →</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-band">
+    <div class="container">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-number">500K+</div>
+          <div class="stat-label">Bộ phim trong database</div>
+        </div>
+        <div>
+          <div class="stat-number">180+</div>
+          <div class="stat-label">Quốc gia được hỗ trợ</div>
+        </div>
+        <div>
+          <div class="stat-number">12M</div>
+          <div class="stat-label">Người dùng hàng tháng</div>
+        </div>
+        <div>
+          <div class="stat-number">99.9%</div>
+          <div class="stat-label">Uptime đảm bảo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="container">
+      <div class="faq-wrap">
+        <div class="faq-header">
+          <p class="section-eyebrow">Hỗ trợ</p>
+          <h2 class="section-title">Câu hỏi thường gặp</h2>
+        </div>
+        <div id="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Wope là gì?
+              <span class="faq-arrow">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Wope là nền tảng nghiên cứu và phân tích dữ liệu phim điện ảnh. Chúng tôi tổng hợp thông tin từ hàng chục nguồn uy tín để cung cấp bức tranh toàn diện nhất về bất kỳ bộ phim nào.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Dữ liệu được cập nhật như thế nào?
+              <span class="faq-arrow">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Dữ liệu được cập nhật tự động mỗi 6 giờ từ các nguồn như IMDb, TMDB, Box Office Mojo, Metacritic và Rotten Tomatoes. Thông tin về phim mới ra mắt thường có trong vòng 24 giờ.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Wope có miễn phí không?
+              <span class="faq-arrow">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Có! Gói miễn phí cho phép tìm kiếm không giới hạn và xem thông tin cơ bản của phim. Gói Pro cung cấp thêm tính năng phân tích chuyên sâu, xuất dữ liệu và API access.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Wope hỗ trợ những ngôn ngữ nào?
+              <span class="faq-arrow">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Hiện tại Wope hỗ trợ tiếng Việt, tiếng Anh, tiếng Trung, tiếng Nhật và tiếng Hàn. Chúng tôi đang mở rộng thêm ngôn ngữ trong các bản cập nhật sắp tới.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Tôi có thể tích hợp API của Wope vào ứng dụng không?
+              <span class="faq-arrow">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Hoàn toàn có thể! Gói Developer cung cấp API RESTful với giới hạn 10,000 requests/ngày. Documentation đầy đủ có tại docs.wope.com. Hỗ trợ JSON và GraphQL.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>Khám phá<br /><span>Tất cả. Ngay bây giờ.</span></h2>
+      <p>Tham gia hơn 12 triệu người dùng đang sử dụng Wope mỗi tháng.</p>
+      <div class="cta-form">
+        <input class="cta-input" type="email" placeholder="Nhập email của bạn..." />
+        <button class="btn-primary">Bắt đầu →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#" class="nav-logo">w<span>o</span>pe</a>
+          <p>Nền tảng nghiên cứu phim điện ảnh thế hệ mới. Dữ liệu toàn diện, phân tích chuyên sâu.</p>
+          <div class="footer-social">
+            <a class="social-btn" title="Twitter">𝕏</a>
+            <a class="social-btn" title="Facebook">f</a>
+            <a class="social-btn" title="YouTube">▶</a>
+            <a class="social-btn" title="Discord">◈</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Sản phẩm</h4>
+          <ul>
+            <li><a href="#">Tính năng</a></li>
+            <li><a href="#">Bảng giá</a></li>
+            <li><a href="#">API</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Tài nguyên</h4>
+          <ul>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Hướng dẫn</a></li>
+            <li><a href="#">Community</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Công ty</h4>
+          <ul>
+            <li><a href="#">Về chúng tôi</a></li>
+            <li><a href="#">Liên hệ</a></li>
+            <li><a href="#">Tuyển dụng</a></li>
+            <li><a href="#">Chính sách</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Wope. Tất cả quyền được bảo lưu.</p>
+        <p>Được làm với ♥ tại Việt Nam</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // Navbar scroll effect
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.background = window.scrollY > 20
+        ? 'rgba(7, 7, 26, 0.95)'
+        : 'rgba(7, 7, 26, 0.8)';
+    });
+
+    // Animate elements on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.feature-card, .faq-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
