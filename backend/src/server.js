@@ -35,8 +35,7 @@ app.use((_req, res) => {
   res.status(404).json({ status: 'error', message: 'Endpoint không tồn tại' });
 });
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`[Server] Backend chạy tại http://localhost:${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`[Server] Backend chạy tại http://localhost:${PORT}`);
 });
+connectDB();
