@@ -2,6 +2,8 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import MovieCard from '@/components/MovieCard';
 import Pagination from '@/components/Pagination';
+import AnimatedGrid from '@/components/AnimatedGrid';
+import AnimatedCount from '@/components/AnimatedCount';
 import { searchOphim } from '@/lib/api';
 
 export const metadata = {
@@ -35,7 +37,9 @@ export default async function SearchPage({ searchParams }) {
             <span className="accent-bar" />
             {q ? `Kết quả tìm kiếm: "${q}"` : 'Tìm kiếm phim'}
             {pagination && pagination.total ? (
-              <span className="page-count">({pagination.total} kết quả)</span>
+              <span className="page-count">
+                (<AnimatedCount value={pagination.total} /> kết quả)
+              </span>
             ) : null}
           </h1>
           {pagination && pagination.totalPages > 1 ? (
@@ -81,11 +85,11 @@ export default async function SearchPage({ searchParams }) {
             <p className="search-hint">
               Kết quả lấy trực tiếp từ kho OPhim · Click vào phim sẽ tự đồng bộ về DB để xem
             </p>
-            <section className="movie-grid">
+            <AnimatedGrid signature={`search-${q}-${page}`}>
               {items.map((movie) => (
                 <MovieCard key={movie.slug} movie={movie} />
               ))}
-            </section>
+            </AnimatedGrid>
 
             <Pagination
               page={pagination?.page || 1}

@@ -202,8 +202,7 @@ img {
   overflow: hidden;
 }
 
-.hero::before {
-  content: '';
+.hero-glow-orb {
   position: absolute;
   top: -100px;
   left: 50%;
@@ -213,6 +212,7 @@ img {
   background: var(--hero-glow);
   pointer-events: none;
   z-index: 0;
+  will-change: transform, opacity;
 }
 
 .hero-inner {

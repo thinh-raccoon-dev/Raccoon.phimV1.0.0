@@ -3,6 +3,9 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import MovieCard from '@/components/MovieCard';
 import Pagination from '@/components/Pagination';
+import AnimatedGrid from '@/components/AnimatedGrid';
+import AnimatedCount from '@/components/AnimatedCount';
+import RevealOnScroll from '@/components/RevealOnScroll';
 import { fetchMovies } from '@/lib/api';
 
 const DEFAULT_LIMIT = 24;
@@ -50,6 +53,7 @@ export default async function HomePage({ searchParams }) {
 
   const items = data?.items || [];
   const pagination = data?.pagination;
+  const gridSignature = `${page}-${filterParams.type || ''}-${filterParams.is_hot || ''}-${filterParams.has_episodes || ''}-${filterParams.q || ''}`;
 
   let titleText = 'Mới Cập Nhật';
   let subtitle = 'Phim mới nhất vừa được đồng bộ về kho';
@@ -79,7 +83,7 @@ export default async function HomePage({ searchParams }) {
         <>
           <Hero />
           <main className="container">
-            <section className="feature-strip">
+            <RevealOnScroll className="feature-strip" selector=".feature-card" staggerMs={120}>
               {FEATURES.map((f) => (
                 <div key={f.title} className="feature-card">
                   <div className="feature-icon">{f.icon}</div>
@@ -87,18 +91,25 @@ export default async function HomePage({ searchParams }) {
                   <p className="feature-desc">{f.desc}</p>
                 </div>
               ))}
-            </section>
+            </RevealOnScroll>
           </main>
         </>
       ) : null}
 
       <main className="container">
-        <div className={hasFilter ? 'page-header' : 'section-header'} style={hasFilter ? undefined : { marginTop: '2rem' }}>
+        <div
+          className={hasFilter ? 'page-header' : 'section-header'}
+          style={hasFilter ? undefined : { marginTop: '2rem' }}
+        >
           <div>
             <h2 className={hasFilter ? 'page-title' : 'section-title'}>
               <span className="accent-bar" />
               {titleText}
-              {pagination ? <span className="page-count">({pagination.total} phim)</span> : null}
+              {pagination ? (
+                <span className="page-count">
+                  (<AnimatedCount value={pagination.total} /> phim)
+                </span>
+              ) : null}
             </h2>
             {!hasFilter ? <p className="section-subtitle">{subtitle}</p> : null}
           </div>
@@ -132,11 +143,11 @@ export default async function HomePage({ searchParams }) {
           </div>
         ) : (
           <>
-            <section className="movie-grid">
+            <AnimatedGrid signature={gridSignature}>
               {items.map((movie) => (
                 <MovieCard key={movie._id || movie.slug} movie={movie} />
               ))}
-            </section>
+            </AnimatedGrid>
 
             <Pagination
               page={pagination?.page || 1}
